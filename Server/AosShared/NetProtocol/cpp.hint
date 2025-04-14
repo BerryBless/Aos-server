@@ -1,0 +1,2 @@
+#define NETPROTOCOL_API __declspec(dllexport)
+#define NETPROTOCOL_API __declspec(dllimport)

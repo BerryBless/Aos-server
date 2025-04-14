@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "새 프로필",
+    "Projects": [
+      {
+        "Path": "AosServer\\TestServer\\TestServer.vcxproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "Tools\\TestClient\\TestClient.vcxproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

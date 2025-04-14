@@ -1,0 +1,2 @@
+#define SERVERCORE_API __declspec(dllexport)
+#define SERVERCORE_API __declspec(dllimport)
