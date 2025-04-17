@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "IocpCore.h"
 #include <iostream>
-
+#include "IocpSession.h"
 // ----------------------
 // param   : 없음
 // function: 생성자 - IOCP 핸들 초기화
@@ -63,24 +63,37 @@ void IocpCore::WorkerThread() {
 		ULONG_PTR completionKey = 0;
 		LPOVERLAPPED overlapped = nullptr;
 
-		BOOL result = ::GetQueuedCompletionStatus(
+		BOOL result = GetQueuedCompletionStatus(
 			_iocpHandle,
 			&bytesTransferred,
 			&completionKey,
 			&overlapped,
-			INFINITE);
+			INFINITE
+		);
 
-		if (!result) {
-			if (overlapped == nullptr) continue; // 종료 이벤트 아님
-			std::cerr << "GQCS failed: " << GetLastError() << std::endl;
+		IocpSession* session = reinterpret_cast<IocpSession*>(completionKey);
+		OverlappedEx* ex = reinterpret_cast<OverlappedEx*>(overlapped);
+
+		if (!result || bytesTransferred == 0) {
+			session->Disconnect();
+			delete ex;
 			continue;
 		}
 
-		if (overlapped) {
-			// 여기에 나중에 OverlappedEx 처리 추가 예정
+		switch (ex->type) {
+		case OperationType::Recv:
+			session->OnRecv(ex->buffer, bytesTransferred);
+			session->PostRecv();
+			break;
+		case OperationType::Send:
+			session->OnSend(bytesTransferred);
+			break;
 		}
+
+		delete ex;
 	}
 }
+
 
 // ----------------------
 // param   : handle - 등록할 소켓/파일 핸들
@@ -92,6 +105,18 @@ bool IocpCore::Register(HANDLE handle) {
 	return (result == _iocpHandle);
 }
 
+bool IocpCore::Register(IocpSession* session)
+{
+	HANDLE result = ::CreateIoCompletionPort(
+		reinterpret_cast<HANDLE>(session->GetSocket()), // 소켓 핸들
+		_iocpHandle,
+		reinterpret_cast<ULONG_PTR>(session),           // 세션 포인터를 completionKey로
+		0
+	);
+
+	return (result == _iocpHandle);
+
+}
 // ----------------------
 // param   : 없음
 // function: IOCP 핸들 반환

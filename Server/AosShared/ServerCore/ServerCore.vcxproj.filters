@@ -13,6 +13,9 @@
     <ClCompile Include="IocpHandle.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="IocpSession.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pch">
@@ -33,6 +36,9 @@
       <Filter>pch</Filter>
     </ClInclude>
     <ClInclude Include="IocpHandle.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpSession.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

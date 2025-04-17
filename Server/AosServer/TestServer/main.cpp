@@ -1,19 +1,51 @@
+#include "pch.h"
 #include "IocpHandle.h"
-#include <iostream>
-#include <chrono>
-#include <thread>
+#include "IocpCore.h"
+#include "EchoSession.h"
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment(lib, "ws2_32.lib")
 
 int main() {
-	IocpHandle core(2); // 내부적으로 CreateIocp 호출
+	// Winsock 초기화
+	WSADATA wsaData;
+	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	std::cout << "IOCP 초기화 성공. 5초간 대기 후 종료 테스트..." << std::endl;
+	// 리스닝 소켓 생성
+	SOCKET listenSocket = socket(AF_INET, SOCK_STREAM, 0);
 
-	core.Run();  // 내부적으로 RunIocp 호출
+	sockaddr_in addr = {};
+	addr.sin_family = AF_INET;
+	addr.sin_port = htons(9001);
+	addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	bind(listenSocket, (sockaddr*)&addr, sizeof(addr));
+	listen(listenSocket, SOMAXCONN);
 
-	// core 소멸 시 자동으로 DestroyIocp 호출
+	std::cout << "[Listen] 포트 9001 대기 중..." << std::endl;
 
-	std::cout << "IOCP 종료 완료." << std::endl;
+	// IOCP Core 시작
+	IocpCore core;
+	core.Initialize(2);
+	core.Run();
+
+	while (true) {
+		SOCKET clientSocket = accept(listenSocket, nullptr, nullptr);
+		std::cout << "[Accept] 클라이언트 연결됨" << std::endl;
+
+		auto* session = new EchoSession();
+		session->BindSocket(clientSocket);
+
+		if (!core.Register(session)) {
+			std::cerr << "[Error] IOCP Register 실패" << std::endl;
+			delete session;
+			continue;
+		}
+
+		session->PostRecv();
+	}
+
+	closesocket(listenSocket);
+	WSACleanup();
 	return 0;
 }

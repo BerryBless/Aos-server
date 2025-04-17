@@ -1,6 +1,9 @@
 #include "pch.h"
 #include <thread>
 
+
+class IocpSession;
+
 class IocpCore
 {
 public:
@@ -12,6 +15,7 @@ public:
 	void Shutdown();                   // 스레드 정지
 
 	bool Register(HANDLE handle);      // 소켓을 IOCP에 등록
+	bool Register(IocpSession* session);
 	HANDLE GetHandle() const;
 
 private:
