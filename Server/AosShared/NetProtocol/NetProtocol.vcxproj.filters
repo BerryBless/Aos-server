@@ -13,4 +13,9 @@
     <ClCompile Include="NetProtocol.cpp" />
     <ClCompile Include="pch.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{31ff296b-db27-42ed-a863-6cc10ec068c7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>
