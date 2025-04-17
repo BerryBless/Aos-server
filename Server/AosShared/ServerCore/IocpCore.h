@@ -16,6 +16,7 @@ public:
 
 	bool Register(HANDLE handle);      // 소켓을 IOCP에 등록
 	bool Register(IocpSession* session);
+	bool Register(std::shared_ptr<IocpSession> session);
 	HANDLE GetHandle() const;
 
 private:

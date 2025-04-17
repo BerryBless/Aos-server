@@ -163,7 +163,9 @@
   <ItemGroup>
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="IocpHandle.h" />
+    <ClInclude Include="IocpListener.h" />
     <ClInclude Include="IocpSession.h" />
+    <ClInclude Include="OverlappedEx.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RecvBuffer.h" />
     <ClInclude Include="ServerCoreExports.h" />
@@ -172,6 +174,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="IocpHandle.cpp" />
+    <ClCompile Include="IocpListener.cpp" />
     <ClCompile Include="IocpSession.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

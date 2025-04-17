@@ -2,6 +2,8 @@
 #include "IocpCore.h"
 #include <iostream>
 #include "IocpSession.h"
+#include "IocpListener.h"
+
 // ----------------------
 // param   : 없음
 // function: 생성자 - IOCP 핸들 초기화
@@ -88,6 +90,10 @@ void IocpCore::WorkerThread() {
 		case OperationType::Send:
 			session->HandleSend(bytesTransferred);
 			break;
+		case OperationType::Accept:
+			if (ex->listener)
+				ex->listener->OnAccept(ex);
+			break;
 		}
 
 		delete ex;
@@ -116,6 +122,10 @@ bool IocpCore::Register(IocpSession* session)
 
 	return (result == _iocpHandle);
 
+}
+bool IocpCore::Register(std::shared_ptr<IocpSession> session)
+{
+	return Register(session.get()); // 기존 raw 포인터 버전 재사용
 }
 // ----------------------
 // param   : 없음

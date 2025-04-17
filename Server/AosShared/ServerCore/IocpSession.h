@@ -1,30 +1,12 @@
 #pragma once
-#include <winsock2.h>
 #include <mswsock.h>
 #include <atomic>
 #include <memory>
 #include <queue>
 #include <mutex>
 #include "RecvBuffer.h"
+#include "OverlappedEx.h"
 
-// ----------------------
-// enum   : OperationType - Overlapped 작업 구분
-// ----------------------
-enum class OperationType {
-	Recv,
-	Send,
-	Accept
-};
-
-// ----------------------
-// struct : OverlappedEx - Overlapped 확장 구조
-// ----------------------
-struct OverlappedEx {
-	OVERLAPPED overlapped = {};
-	OperationType type;
-	WSABUF wsaBuf;
-	char buffer[4096];
-};
 
 // ----------------------
 // param   : 없음
@@ -52,10 +34,11 @@ public:
 	void HandleRecv(const char* data, int len);
 
 public:
-	virtual void OnRecv(const char* data, int len) = 0;
-	virtual void OnRecvPacket(const char* data, int len) = 0;
+	virtual void OnAccept() {};
+	virtual void OnRecv(const char* data, int len) {};
+	virtual void OnRecvPacket(const char* data, int len) {};
 	virtual void OnSendComplete(int len) {};
-	virtual void OnDisconnected() = 0;
+	virtual void OnDisconnected() {};
 
 protected:
 	// SendQueue

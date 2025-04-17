@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
 #include <cstring>
+#define INIT_RECV_BUFFER_SIZE 8192
+
 
 class RecvBuffer {
 public:
-	RecvBuffer(int capacity = 8192);
+	RecvBuffer(int capacity = INIT_RECV_BUFFER_SIZE);
 
 	// 데이터 쓰기
 	bool Write(const char* data, int len);
