@@ -26,4 +26,8 @@
 #include <iostream>
 #include <timeapi.h>
 
+#include "ServerStat.h"
+
+#define SAFE_DELETE(ptr) if(ptr != nullptr) {delete ptr; ptr =nullptr;}
+
 #endif //PCH_H

@@ -229,8 +229,8 @@ int main() {
 	WSADATA wsaData;
 	WSAStartup(MAKEWORD(2, 2), &wsaData);
 
-	const int totalClients = 10000;
-	const int clientsPerThread = 1000;
+	const int totalClients = 1000;
+	const int clientsPerThread = 500;
 	const int workerThreads = (totalClients - 1) / clientsPerThread;
 
 	thread monitor(MonitorThread, totalClients);  // 전체 성능 측정용

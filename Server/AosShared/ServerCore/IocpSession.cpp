@@ -1,13 +1,18 @@
 #include "pch.h"
 #include "IocpSession.h"
 #include <iostream>
+#include "GlobalPoolManager.h" 
 
 IocpSession::IocpSession()
-	: _socket(INVALID_SOCKET), _connected(false) {
+	: _socket(INVALID_SOCKET), _connected(false) 
+{
+	ServerStat::IncClient();
 }
 
-IocpSession::~IocpSession() {
+IocpSession::~IocpSession() 
+{
 	Disconnect();
+	ServerStat::DecClient();
 }
 
 void IocpSession::BindSocket(SOCKET socket) {
@@ -29,10 +34,7 @@ SOCKET IocpSession::GetSocket() const {
 void IocpSession::PostRecv() {
 	if (!_connected) return;
 
-	auto* overlapped = new OverlappedEx();
-	overlapped->type = OperationType::Recv;
-	overlapped->wsaBuf.buf = overlapped->buffer;
-	overlapped->wsaBuf.len = sizeof(overlapped->buffer);
+	auto* overlapped = new OverlappedEx(OperationType::Recv);
 
 	DWORD flags = 0;
 	DWORD recvBytes = 0;
@@ -46,13 +48,9 @@ void IocpSession::PostRecv() {
 		(LPWSAOVERLAPPED)overlapped,
 		NULL
 	);
-	if (ret == SOCKET_ERROR) {
-		int err = WSAGetLastError();
-		//std::cerr << "WSARecv ½ÇÆÐ: " << err << std::endl;
-	}
 
 	if (ret == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING) {
-		delete overlapped;
+		SAFE_DELETE(overlapped);
 		Disconnect();
 	}
 }
@@ -85,10 +83,10 @@ void IocpSession::PostSend(const char* data, int len) {
 
 
 void IocpSession::SendInternal(const std::vector<char>& packet) {
-	auto* overlapped = new OverlappedEx();
+	auto* overlapped = new OverlappedEx(OperationType::Send);
 	overlapped->type = OperationType::Send;
-	memcpy(overlapped->buffer, packet.data(), packet.size());
-	overlapped->wsaBuf.buf = overlapped->buffer;
+	memcpy(overlapped->buffer->GetData(), packet.data(), packet.size());
+	overlapped->wsaBuf.buf = overlapped->buffer->GetData();
 	overlapped->wsaBuf.len = static_cast<ULONG>(packet.size());
 
 	DWORD sendBytes = 0;
@@ -103,13 +101,16 @@ void IocpSession::SendInternal(const std::vector<char>& packet) {
 	);
 
 	if (ret == SOCKET_ERROR && WSAGetLastError() != WSA_IO_PENDING) {
-		delete overlapped;
+		SAFE_DELETE(overlapped);
 		Disconnect();
 	}
 }
 
 
 void IocpSession::HandleRecv(const char* data, int len) {
+	if (!data) {
+		std::cerr << "[ERROR] HandleRecv: data is null\n";
+	}
 	if (!_recvBuffer.Write(data, len)) {
 		Disconnect();
 		return;
@@ -124,6 +125,8 @@ void IocpSession::HandleRecv(const char* data, int len) {
 		uint16_t packetSize = *(uint16_t*)_recvBuffer.Peek();
 		if (!_recvBuffer.HasCompletePacket(packetSize))
 			break;
+
+		ServerStat::IncPacket();
 
 		OnRecvPacket(_recvBuffer.Peek(), packetSize);
 		_recvBuffer.Consume(packetSize);

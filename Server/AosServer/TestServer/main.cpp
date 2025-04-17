@@ -4,6 +4,7 @@
 #include "EchoSession.h"
 #include <winsock2.h>
 #include <ws2tcpip.h>
+#include "ServerStat.h"
 #pragma comment(lib, "ws2_32.lib")
 
 int main() {
@@ -12,9 +13,9 @@ int main() {
 		std::cerr << "[WSAStartup 실패] 코드: " << WSAGetLastError() << std::endl;
 		return -1;
 	}
-
+	ServerStat::Init();
 	IocpCore core;
-	core.Initialize(28); // 워커 스레드 4개
+	core.Initialize(1); // 워커 스레드 4개
 	core.Run();
 
 	SOCKET listenSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -33,4 +34,7 @@ int main() {
 		core.Register(session);
 		session->PostRecv();
 	}
+
+	ServerStat::Shutdown();
+	return 0;
 }

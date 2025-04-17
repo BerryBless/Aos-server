@@ -16,12 +16,20 @@
     <ClCompile Include="IocpSession.cpp">
       <Filter>Core</Filter>
     </ClCompile>
-    <ClCompile Include="RecvBuffer.cpp">
-      <Filter>Core</Filter>
-    </ClCompile>
     <ClCompile Include="IocpListener.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="IocpBufferPool.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
+    <ClCompile Include="ServerStat.cpp" />
+    <ClCompile Include="GlobalPoolManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pch">
@@ -53,7 +61,17 @@
     <ClInclude Include="IocpListener.h">
       <Filter>Core</Filter>
     </ClInclude>
-    <ClInclude Include="OverlappedEx.h" />
+    <ClInclude Include="IocpBufferPool.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="OverlappedEx.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpBuffer.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="ServerStat.h" />
+    <ClInclude Include="GlobalPoolManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint">

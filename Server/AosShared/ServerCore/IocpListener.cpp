@@ -6,6 +6,7 @@
 #include "IocpListener.h"
 #include <ws2tcpip.h>
 #include "IocpCore.h"
+#include "GlobalPoolManager.h"
 
 bool IocpListener::Start(std::shared_ptr<IocpCore> core, const NetAddress& bindAddr) {
 	_listenSocket = socket(AF_INET, SOCK_STREAM, 0);
@@ -45,7 +46,7 @@ bool IocpListener::PostAccept() {
 	BOOL result = _fnAcceptEx(
 		_listenSocket,
 		clientSocket,
-		overlapped->buffer,
+		overlapped->buffer->GetData(),
 		0,
 		sizeof(sockaddr_in) + 16,
 		sizeof(sockaddr_in) + 16,
@@ -53,7 +54,7 @@ bool IocpListener::PostAccept() {
 		&overlapped->overlapped);
 
 	if (result == FALSE && WSAGetLastError() != WSA_IO_PENDING) {
-		delete overlapped;
+		SAFE_DELETE(overlapped);
 		closesocket(clientSocket);
 		return false;
 	}
@@ -70,6 +71,4 @@ void IocpListener::OnAccept(OverlappedEx* overlapped) {
 	_iocpCore->Register(overlapped->session);
 	overlapped->session->OnAccept();
 	PostAccept();
-
-	delete overlapped;
 }

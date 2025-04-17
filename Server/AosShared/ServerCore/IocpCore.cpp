@@ -78,25 +78,28 @@ void IocpCore::WorkerThread() {
 
 		if (!result || bytesTransferred == 0) {
 			session->Disconnect();
-			delete ex;
+			SAFE_DELETE(ex);
 			continue;
 		}
-
 		switch (ex->type) {
 		case OperationType::Recv:
-			session->OnRecv(ex->buffer, bytesTransferred);
+			session->HandleRecv(ex->buffer->GetData(), bytesTransferred);
 			session->PostRecv();
 			break;
 		case OperationType::Send:
 			session->HandleSend(bytesTransferred);
+			if (!ex->buffer)
 			break;
 		case OperationType::Accept:
 			if (ex->listener)
+			{
 				ex->listener->OnAccept(ex);
+			}
 			break;
 		}
 
-		delete ex;
+		SAFE_DELETE(ex);
+		//SAFE_RELEASE_AND_DELETE(ex);
 	}
 }
 

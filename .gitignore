@@ -37,3 +37,5 @@ Debug
 
 *.exp
 *.pdb
+*.zip
+*.7z
