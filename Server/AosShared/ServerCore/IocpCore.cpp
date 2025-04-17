@@ -86,7 +86,7 @@ void IocpCore::WorkerThread() {
 			session->PostRecv();
 			break;
 		case OperationType::Send:
-			session->OnSend(bytesTransferred);
+			session->HandleSend(bytesTransferred);
 			break;
 		}
 

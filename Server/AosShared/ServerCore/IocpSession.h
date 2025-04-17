@@ -3,6 +3,9 @@
 #include <mswsock.h>
 #include <atomic>
 #include <memory>
+#include <queue>
+#include <mutex>
+#include "RecvBuffer.h"
 
 // ----------------------
 // enum   : OperationType - Overlapped 작업 구분
@@ -42,9 +45,29 @@ public:
 	SOCKET GetSocket() const;
 
 public:
+	// ----------------------
+	// function: IOCP 이벤트 핸들러 (내부 호출용, 외부에서 직접 호출 금지)
+	// ----------------------
+	void HandleSend(int len);
+	void HandleRecv(const char* data, int len);
+
+public:
 	virtual void OnRecv(const char* data, int len) = 0;
-	virtual void OnSend(int len) = 0;
+	virtual void OnRecvPacket(const char* data, int len) = 0;
+	virtual void OnSendComplete(int len) {};
 	virtual void OnDisconnected() = 0;
+
+protected:
+	// SendQueue
+	std::queue<std::vector<char>> _sendQueue;
+	std::mutex _sendLock;
+	bool _sending = false;
+
+	// RecvBuffer
+	RecvBuffer _recvBuffer;
+protected:
+	void SendInternal(const std::vector<char>& packet);
+
 
 private:
 	SOCKET _socket;

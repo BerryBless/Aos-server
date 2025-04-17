@@ -16,6 +16,9 @@
     <ClCompile Include="IocpSession.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="RecvBuffer.cpp">
+      <Filter>Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="pch">
@@ -39,6 +42,9 @@
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="IocpSession.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="RecvBuffer.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
