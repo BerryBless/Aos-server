@@ -3,7 +3,8 @@
 #include <atomic>
 #include <memory>
 #include <queue>
-#include <mutex>
+#include <boost/lockfree/queue.hpp>
+#include <atomic>
 #include "RecvBuffer.h"
 #include "OverlappedEx.h"
 
@@ -33,6 +34,8 @@ public:
 	void HandleSend(int len);
 	void HandleRecv(const char* data, int len);
 
+	void SendInternalNext();
+
 public:
 	virtual void OnAccept() {};
 	virtual void OnRecv(const char* data, int len) {};
@@ -42,9 +45,8 @@ public:
 
 protected:
 	// SendQueue
-	std::queue<std::vector<char>> _sendQueue;
-	std::mutex _sendLock;
-	bool _sending = false;
+	boost::lockfree::queue<std::vector<char>*> _sendQueue{ 128 };
+	std::atomic<bool> _sending = false;
 
 	// RecvBuffer
 	RecvBuffer _recvBuffer;
