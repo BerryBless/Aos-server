@@ -39,3 +39,19 @@ Debug
 *.pdb
 *.zip
 *.7z
+
+# vcpkg 빌드 캐시 및 패키지
+/vcpkg/buildtrees/
+/vcpkg/packages/
+/vcpkg/downloads/
+/vcpkg/installed/
+/vcpkg/out/
+/vcpkg/vcpkg_installed.json
+/vcpkg/vcpkg.lock
+
+# CMake build output
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile

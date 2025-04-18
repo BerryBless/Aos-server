@@ -74,19 +74,27 @@
     <TargetName>ServerCore</TargetName>
     <OutDir>$(SolutionDir)..\Library\</OutDir>
     <IntDir>$(SolutionDir)..\Library\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>ServerCore</TargetName>
     <OutDir>$(SolutionDir)..\Library\</OutDir>
+    <IncludePath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>ServerCore</TargetName>
     <OutDir>$(SolutionDir)..\Library\</OutDir>
+    <IncludePath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>ServerCore</TargetName>
     <OutDir>$(SolutionDir)..\Library\</OutDir>
     <IntDir>$(SolutionDir)..\Library\intermediate\$(ProjectName)\$(Configuration)\</IntDir>
+    <IncludePath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)..\Library\vcpkg\installed\x64-windows\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
