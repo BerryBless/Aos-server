@@ -37,7 +37,6 @@ void ServerStat::MonitorThread() {
 		int packets = _packetCount.exchange(0);
 		std::cout << "[서버 상태] 클라 연결: " << _connectedClients.load()
 			<< ", TPS: " << packets / 5
-			<< ", 생성된 버퍼 수: " << _totalBufferCreated.load()
 			<< ", 총 관리중인 버퍼 " << BUFFER_POOL_INSTANCE().TotalCount()
 			<< ", 그중 남은 버퍼: " << BUFFER_POOL_INSTANCE().AvailableCount()
 			<< std::endl;

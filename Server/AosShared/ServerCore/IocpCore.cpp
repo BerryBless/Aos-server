@@ -3,6 +3,7 @@
 #include <iostream>
 #include "IocpSession.h"
 #include "IocpListener.h"
+#include "IocpBuffer.h"
 
 // ----------------------
 // param   : ¾øÀ½

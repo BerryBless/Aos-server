@@ -1,68 +1,43 @@
 // ----------------------
 // file   : IocpBufferPool.h
-// function: 스레드 단위 버퍼 풀 구현체 (stack 기반)
+// function: lock-free 버퍼 풀 구현체 (boost::lockfree::stack 기반)
 // ----------------------
 #pragma once
 
-#include <stack>
-#include <mutex>
-#include <memory>
-#include "IocpBuffer.h"
+#include <boost/lockfree/stack.hpp>
+#include <atomic>
 
+class IocpBuffer;
+
+// ----------------------
+// class : IocpBufferPool
+// function: 스레드 로컬 단위의 lock-free 버퍼 풀
+// ----------------------
 class IocpBufferPool {
 public:
-	std::unique_ptr<IocpBuffer> Acquire() {
-		if (_stack.empty())
-		{
-			++_totalCount;
-			auto ptr = std::make_unique<IocpBuffer>() ;
-			if (ptr && ptr.get() != nullptr)
-				return ptr;
-			std::cerr << "[POOL] Acquire: nullptr 발견, 제거됨\n";
-		}
-		if (!_stack.top())
-		{
-			std::cerr << "!_stack.top()";
-		}
-		std::lock_guard<std::mutex> guard(_lock);
-		auto ptr = std::move(_stack.top());
-		_stack.pop();
-		if (!ptr) {
-			std::cerr << "[POOL] _stack에서 꺼낸 포인터가 null\n";
-		}
-		return ptr;
-	}
+	IocpBufferPool();
+	~IocpBufferPool();
 
-	void Release(std::unique_ptr<IocpBuffer> buffer) {
-		if (!buffer) {
-			std::cerr << "[POOL] Release(nullptr): 이중 Move 또는 잘못된 해제\n";
-			return;
-		}
-		if (!buffer.get()) {
-			std::cerr << "[POOL] Release(empty ptr): 내부 nullptr\n";
-			return;
-		}
-		if (buffer->GetOwner() != this) {
-			std::cerr << "[FATAL] 다른 풀로부터 넘어온 buffer!\n";
-			std::abort();
-		}
-		std::lock_guard<std::mutex> guard(_lock);
-		_stack.push(std::move(buffer));
-	}
+	// ----------------------
+	// function: 버퍼 획득
+	// return  : 사용 가능한 버퍼 포인터
+	// ----------------------
+	IocpBuffer* Acquire();
 
+	// ----------------------
+	// param   : buffer - 반환할 버퍼 포인터
+	// function: 사용 완료된 버퍼를 풀에 반환
+	// return  : 없음
+	// ----------------------
+	void Release(IocpBuffer* buffer);
 
-	size_t GetTotalCount() const
-	{
-		return _totalCount;
-	}
-
-	size_t GetPoolSize() const
-	{
-		return _stack.size();
-	}
+	// ----------------------
+	// function: 전체 생성된 버퍼 수
+	// return  : 생성 수
+	// ----------------------
+	size_t GetTotalCount() const;
 
 private:
-	std::stack<std::unique_ptr<IocpBuffer>> _stack;
-	std::mutex _lock;
-	size_t _totalCount = 0;  // ← 생성된 전체 버퍼 수 (사용 + 대기)
+	boost::lockfree::stack<IocpBuffer*> _stack;
+	std::atomic<size_t> _totalCount{ 0 };
 };

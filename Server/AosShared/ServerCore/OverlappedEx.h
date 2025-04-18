@@ -2,6 +2,7 @@
 
 #include <winsock2.h>
 #include "GlobalPoolManager.h" 
+#include "IocpBuffer.h"
 #define INIT_OVERLAB_BUFFER_SIZE 64
 
 class IocpSession;
@@ -24,7 +25,7 @@ struct OverlappedEx {
 	OVERLAPPED overlapped = {};           // 기본 OVERLAPPED 구조체
 	OperationType type;                   // Recv / Send / Accept 등 작업 타입
 	WSABUF wsaBuf;                        // WSASend / WSARecv 시 사용하는 버퍼
-	std::unique_ptr<IocpBuffer> buffer;	  // 스레드 로컬 풀에서 획득한 버퍼
+	IocpBuffer* buffer;	  // 스레드 로컬 풀에서 획득한 버퍼
 
 	std::shared_ptr<IocpSession> session; // 세션 객체 (Accept 완료 후 처리용)
 	IocpListener* listener = nullptr;     // Accept 이벤트 발생시 처리할 리스너
@@ -43,7 +44,7 @@ struct OverlappedEx {
 	~OverlappedEx()
 	{
 		if (buffer)
-			buffer->GetOwner()->Release(std::move(buffer));
+			buffer->GetOwner()->Release(buffer);
 		else {
 			std::cerr << "[OverlappedEx] buffer=null, 릴리즈 안함\n";
 		}

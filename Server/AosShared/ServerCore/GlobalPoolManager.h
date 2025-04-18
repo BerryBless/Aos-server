@@ -1,27 +1,27 @@
 #pragma once
 
 #include <vector>
-#include <mutex>
 #include <cstddef>
 #include "IocpBufferPool.h"
 
 class GlobalPoolManager {
-private:
-	void RegisterPool(IocpBufferPool* pool);
-
 public:
 	static GlobalPoolManager& Instance();
 
 	IocpBufferPool* GetMyPool();
 
-	size_t TotalCount();
-	size_t AvailableCount();
+	size_t TotalCount() const { return _totalCount.load(); }
+	size_t AvailableCount() const { return _availableCount.load(); }
+
+	void AddToTotal(size_t n = 1) { _totalCount.fetch_add(n); }
+	void AddToAvailable(size_t n = 1) { _availableCount.fetch_add(n); }
+	void SubFromAvailable(size_t n = 1) { _availableCount.fetch_sub(n); }
 
 private:
 	GlobalPoolManager() = default;
 
-	std::mutex _lock;
-	std::vector<IocpBufferPool*> _allPools;
+	std::atomic<size_t> _totalCount{ 0 };
+	std::atomic<size_t> _availableCount{ 0 };
 };
 
 

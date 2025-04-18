@@ -22,7 +22,6 @@ private:
 	static void MonitorThread();    // 내부 모니터 루프
 
 private:
-	inline static std::atomic<int> _totalBufferCreated = 0;
 	inline static std::atomic<int> _connectedClients = 0;
 	inline static std::atomic<int> _packetCount = 0;
 	inline static std::atomic<bool> _running = false;
