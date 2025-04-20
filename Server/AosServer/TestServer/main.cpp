@@ -15,7 +15,7 @@ int main() {
 	}
 	ServerStat::Init();
 	IocpCore core;
-	core.Initialize(1); // 워커 스레드 4개
+	core.Initialize(5); // 워커 스레드 4개
 	core.Run();
 
 	SOCKET listenSocket = socket(AF_INET, SOCK_STREAM, 0);

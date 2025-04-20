@@ -15,7 +15,7 @@ IocpBufferPool::IocpBufferPool() : _stack(1024) {}
 IocpBufferPool::~IocpBufferPool() {
 	IocpBuffer* ptr = nullptr;
 	while (_stack.pop(ptr)) {
-		delete ptr;
+		SAFE_DELETE (ptr);
 	}
 }
 
@@ -57,7 +57,7 @@ void IocpBufferPool::Release(IocpBuffer* buffer) {
 	}
 	if (!_stack.push(buffer)) {
 		std::cerr << "[POOL] push ½ÇÆÐ\n";
-		delete buffer;
+		SAFE_DELETE (buffer);
 	}
 	GlobalPoolManager::Instance().AddToAvailable(1);
 }

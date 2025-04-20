@@ -80,7 +80,7 @@ void IocpSession::PostSend(const char* data, int len) {
 
 	if (!_sendQueue.push(packet)) {
 		std::cerr << "[SendQueue] push ½ÇÆÐ - drop\n";
-		delete packet;
+		SAFE_DELETE( packet);
 		return;
 	}
 
@@ -136,7 +136,7 @@ void IocpSession::SendInternalNext() {
 	overlapped->wsaBuf.buf = overlapped->buffer->GetData();
 	overlapped->wsaBuf.len = static_cast<ULONG>(packet->size());
 
-	delete packet;
+	SAFE_DELETE (packet);
 
 	DWORD sendBytes = 0;
 	int ret = WSASend(
